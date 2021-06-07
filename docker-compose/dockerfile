@@ -1,0 +1,25 @@
+FROM ubuntu:latest
+# base settings
+RUN apt update && apt upgrade -y \
+    && apt install -y build-essential libssl-dev libreadline-dev zlib1g-dev git curl tree unzip peco fish
+# fish settings
+SHELL ["/bin/fish", "-l", "-c"]
+RUN curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher \
+    && fisher install oh-my-fish/plugin-peco \
+    && fisher install pure-fish/pure \
+    # たまに表示がバグる環境があるので、その時の代替としては ↓ がよさそう
+    # && fisher install rdev/omf-theme-one \
+    && chsh -s (which fish)
+# ↑ でいけると思うけど、だめだったら ↓ で
+# && chsh -s /bin/fish
+# aws cli settings
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && ./aws/install \
+    && rm -rf awscliv2 \
+    && rm -rf aws
+# terraform settings
+RUN git clone https://github.com/tfutils/tfenv.git ~/.tfenv \
+    && echo 'set -gx PATH "$HOME/.tfenv/bin" $PATH' >> ~/.config/fish/config.fish
+# fira code settings
+RUN apt install fonts-firacode
